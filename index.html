@@ -835,9 +835,7 @@ body{
     <div class="top-coin"><span>🪙</span><span id="h-coins">0</span></div>
     <div class="top-lv"><span class="l">Рівень</span><span class="n" id="h-lv">0</span></div>
     <div class="top-gem"><span>💎</span><span id="h-gems">10</span></div>
-    <div id="music-btn" onclick="toggleMusic()" style="
-      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
-      border-radius:20px;padding:5px 10px;font-size:16px;cursor:pointer;user-select:none;">🎵</div>
+
   </div>
 
   
@@ -3016,8 +3014,7 @@ function toggleMusic(){
 }
 
 function updateMusicBtn(){
-  const btn = document.getElementById('music-btn');
-  if(btn) btn.textContent = musicOn ? '🎵' : '🔇';
+  // Music button removed from top bar - handled in settings only
 }
 
 initMusic();
@@ -3076,12 +3073,15 @@ function renderSettings(){
 }
 
 function changeVolume(val){
+  val = parseInt(val);
+  musicVolume = val;
+  localStorage.setItem('kachok_volume', val);
   const audio = document.getElementById('bg-music');
   if(audio) audio.volume = val / 100;
-  musicVolume = parseInt(val);
-  localStorage.setItem('kachok_volume', val);
   const txt = document.getElementById('music-vol-txt');
   if(txt) txt.textContent = val + '%';
+  const slider = document.getElementById('volume-slider');
+  if(slider) slider.value = val;
 }
 
 // Load saved volume
