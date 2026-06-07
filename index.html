@@ -1090,25 +1090,44 @@ body{
     <div style="background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px;margin-bottom:10px">
       <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--dim);margin-bottom:12px">🎵 Звук</div>
       
+      <!-- Музика toggle -->
       <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)">
         <div>
-          <div style="font-size:14px;font-weight:700">Фонова музика</div>
+          <div style="font-size:14px;font-weight:700">🎵 Фонова музика</div>
           <div style="font-size:10px;color:var(--dim);margin-top:2px">Музика під час гри</div>
         </div>
-        <div id="music-toggle" onclick="toggleMusic()" style="
-          width:50px;height:26px;border-radius:13px;cursor:pointer;
-          transition:all .3s;position:relative;flex-shrink:0;">
-        </div>
+        <div id="music-toggle" onclick="toggleMusic()" style="width:50px;height:26px;border-radius:13px;cursor:pointer;transition:all .3s;position:relative;flex-shrink:0;"></div>
       </div>
 
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0">
-        <div>
-          <div style="font-size:14px;font-weight:700">Гучність музики</div>
-          <div style="font-size:10px;color:var(--dim);margin-top:2px">Від 0 до 100%</div>
+      <!-- Гучність музики -->
+      <div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <div style="font-size:13px;font-weight:700">Гучність музики</div>
+          <div style="font-family:'Orbitron';font-size:11px;color:var(--cyan)" id="music-vol-txt">30%</div>
         </div>
         <input type="range" min="0" max="100" value="30" id="volume-slider"
           oninput="changeVolume(this.value)"
-          style="width:100px;accent-color:var(--cyan)">
+          style="width:100%;accent-color:var(--cyan);height:4px;">
+      </div>
+
+      <!-- Звукові ефекти toggle -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+        <div>
+          <div style="font-size:14px;font-weight:700">🔊 Звукові ефекти</div>
+          <div style="font-size:10px;color:var(--dim);margin-top:2px">Звуки тренування і бою</div>
+        </div>
+        <div id="sfx-toggle" onclick="toggleSfx()" style="width:50px;height:26px;border-radius:13px;cursor:pointer;transition:all .3s;position:relative;flex-shrink:0;"></div>
+      </div>
+
+      <!-- Гучність ефектів -->
+      <div style="padding:10px 0">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <div style="font-size:13px;font-weight:700">Гучність ефектів</div>
+          <div style="font-family:'Orbitron';font-size:11px;color:var(--cyan)" id="sfx-vol-txt">60%</div>
+        </div>
+        <input type="range" min="0" max="100" value="60" id="sfx-slider"
+          oninput="changeSfxVolume(this.value)"
+          style="width:100%;accent-color:var(--orange);height:4px;">
       </div>
     </div>
 
@@ -2968,11 +2987,14 @@ preloadImages();
 
 // ── МУЗИКА ──────────────────────────────────────────
 let musicOn = localStorage.getItem('kachok_music') !== 'off';
+let sfxOn = localStorage.getItem('kachok_sfx') !== 'off';
+let sfxVolume = parseInt(localStorage.getItem('kachok_sfx_vol') || '60');
+let musicVolume = parseInt(localStorage.getItem('kachok_volume') || '30');
 
 function initMusic(){
   const audio = document.getElementById('bg-music');
   if(!audio) return;
-  audio.volume = 0.3;
+  audio.volume = musicVolume / 100;
   if(musicOn){
     audio.play().catch(()=>{
       // Autoplay blocked - start on first tap
@@ -3001,28 +3023,53 @@ function updateMusicBtn(){
 initMusic();
 
 function playSound(id){
+  if(!sfxOn) return;
   try{
     const audio = document.getElementById('sfx-'+id);
     if(!audio) return;
     audio.currentTime = 0;
-    audio.volume = 0.6;
+    audio.volume = sfxVolume / 100;
     audio.play().catch(()=>{});
   }catch(e){}
 }
 
+function toggleSfx(){
+  sfxOn = !sfxOn;
+  localStorage.setItem('kachok_sfx', sfxOn ? 'on' : 'off');
+  toast(sfxOn ? '🔊 Звуки увімкнені' : '🔇 Звуки вимкнені', 'ok');
+  renderSettings();
+}
+
+function changeSfxVolume(val){
+  sfxVolume = parseInt(val);
+  localStorage.setItem('kachok_sfx_vol', val);
+  const txt = document.getElementById('sfx-vol-txt');
+  if(txt) txt.textContent = val + '%';
+}
+
 function renderSettings(){
-  // Toggle button
+  // Music toggle
   const toggle = document.getElementById('music-toggle');
   if(toggle){
     toggle.style.background = musicOn ? 'var(--cyan)' : 'rgba(255,255,255,.15)';
     toggle.innerHTML = `<div style="position:absolute;top:3px;${musicOn?'right':'left'}:3px;width:20px;height:20px;background:white;border-radius:50%;transition:all .3s"></div>`;
   }
-  // Volume slider
-  const slider = document.getElementById('volume-slider');
-  if(slider){
-    const audio = document.getElementById('bg-music');
-    if(audio) slider.value = Math.round(audio.volume * 100);
+  // SFX toggle
+  const sfxToggle = document.getElementById('sfx-toggle');
+  if(sfxToggle){
+    sfxToggle.style.background = sfxOn ? 'var(--orange)' : 'rgba(255,255,255,.15)';
+    sfxToggle.innerHTML = `<div style="position:absolute;top:3px;${sfxOn?'right':'left'}:3px;width:20px;height:20px;background:white;border-radius:50%;transition:all .3s"></div>`;
   }
+  // Music volume slider
+  const slider = document.getElementById('volume-slider');
+  if(slider){ slider.value = musicVolume; }
+  const mvtxt = document.getElementById('music-vol-txt');
+  if(mvtxt) mvtxt.textContent = musicVolume + '%';
+  // SFX volume slider
+  const sfxSlider = document.getElementById('sfx-slider');
+  if(sfxSlider){ sfxSlider.value = sfxVolume; }
+  const svtxt = document.getElementById('sfx-vol-txt');
+  if(svtxt) svtxt.textContent = sfxVolume + '%';
   // Player ID
   const sid = document.getElementById('settings-id');
   if(sid) sid.textContent = getTgId();
@@ -3031,7 +3078,10 @@ function renderSettings(){
 function changeVolume(val){
   const audio = document.getElementById('bg-music');
   if(audio) audio.volume = val / 100;
+  musicVolume = parseInt(val);
   localStorage.setItem('kachok_volume', val);
+  const txt = document.getElementById('music-vol-txt');
+  if(txt) txt.textContent = val + '%';
 }
 
 // Load saved volume
