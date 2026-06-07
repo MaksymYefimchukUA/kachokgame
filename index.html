@@ -735,6 +735,10 @@ body{
 }
 
 </style>
+
+<audio id="bg-music" loop preload="auto">
+  <source src="https://raw.githubusercontent.com/MaksymYefimchukUA/kachokgame-assets/main/sounds/Level%20Up%20Sweat.mp3" type="audio/mpeg">
+</audio>
 </head>
 <body>
 <div class="bg"></div>
@@ -825,6 +829,9 @@ body{
     <div class="top-coin"><span>🪙</span><span id="h-coins">0</span></div>
     <div class="top-lv"><span class="l">Рівень</span><span class="n" id="h-lv">0</span></div>
     <div class="top-gem"><span>💎</span><span id="h-gems">10</span></div>
+    <div id="music-btn" onclick="toggleMusic()" style="
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+      border-radius:20px;padding:5px 10px;font-size:16px;cursor:pointer;user-select:none;">🎵</div>
   </div>
 
   
@@ -2893,6 +2900,40 @@ function preloadImages(){
   allImgs.forEach(url => { const img = new Image(); img.src = url; });
 }
 preloadImages();
+
+
+// ── МУЗИКА ──────────────────────────────────────────
+let musicOn = localStorage.getItem('kachok_music') !== 'off';
+
+function initMusic(){
+  const audio = document.getElementById('bg-music');
+  if(!audio) return;
+  audio.volume = 0.3;
+  if(musicOn){
+    audio.play().catch(()=>{
+      // Autoplay blocked - start on first tap
+      document.addEventListener('touchstart', ()=> audio.play(), {once:true});
+      document.addEventListener('click', ()=> audio.play(), {once:true});
+    });
+  }
+}
+
+function toggleMusic(){
+  const audio = document.getElementById('bg-music');
+  if(!audio) return;
+  musicOn = !musicOn;
+  localStorage.setItem('kachok_music', musicOn ? 'on' : 'off');
+  if(musicOn){ audio.play(); toast('🎵 Музика увімкнена','ok'); }
+  else { audio.pause(); toast('🔇 Музика вимкнена','ok'); }
+  updateMusicBtn();
+}
+
+function updateMusicBtn(){
+  const btn = document.getElementById('music-btn');
+  if(btn) btn.textContent = musicOn ? '🎵' : '🔇';
+}
+
+initMusic();
 
 initServerSync();
 </script>
