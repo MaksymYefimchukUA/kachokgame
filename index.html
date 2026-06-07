@@ -1568,7 +1568,7 @@ function train(type){
     toast(`❤️ +30 HP (${G.hp}/${maxHp})`,'ok');
   }
 
-  save(); renderHome();
+  save(); saveToServer(); renderHome();
 }
 
 function useSteroid(){
@@ -2747,12 +2747,17 @@ async function loadFromServer(userId){
     G.weekRt      = parseInt(data.week_rt)||0;
 
     if(data.skin) G.skin = data.skin;
-    
 
-    if(!G.exp && G.lv > 0) G.exp = 0;
+    // Синхронізуємо skinLevels з сервера
+    const activeSkin = G.skin || 'default';
+    if(!G.skinLevels) G.skinLevels = {};
+    if(!G.skinExp) G.skinExp = {};
+    G.skinLevels[activeSkin] = G.lv;
+    G.skinExp[activeSkin] = 0;
 
     save();
-    toast('✅ Прогрес завантажено з сервера!', 'ok');
+    renderHome();
+    toast('✅ Прогрес завантажено!', 'ok');
     return true;
   } catch(e){
     console.warn('[Sync] Could not load from server:', e.message);
@@ -2773,7 +2778,7 @@ async function saveToServer(){
       body: JSON.stringify({
         userId,
         name:        getPlayerName(),
-        lv:          G.lv,
+        lv:          G.skinLevels[G.skin]||G.lv||0,
         mu:          Math.floor(G.mu),
         en:          Math.floor(G.en),
         hp:          G.hp,
@@ -2870,8 +2875,13 @@ setInterval(()=>{
   updateDailyTimer();
 },1000);
 
-// Автозбереження (кожні 15 секунд)
-setInterval(()=>{ save(); },15000);
+// Автозбереження (кожні 10 секунд + синхронізація з сервером)
+setInterval(()=>{ 
+  save();
+  if(Date.now() - lastServerSync > 20000){
+    saveToServer();
+  }
+},10000);
 
 // Preload character images
 function preloadImages(){
