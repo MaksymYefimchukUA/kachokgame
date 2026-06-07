@@ -2649,23 +2649,24 @@ async function loadFromServer(userId){
     const data = await r.json();
     if(!data || !data.id) return false;
 
-    G.mu    = Math.max(parseFloat(data.mu)||0,    G.mu);
-    G.coins = Math.max(parseFloat(data.coins)||0, G.coins);
-    G.rt    = Math.max(parseInt(data.rt)||0,      G.rt);
-    G.lv    = Math.max(parseInt(data.lv)||0,      G.lv);
-    G.wins  = Math.max(parseInt(data.wins)||0,    G.wins);
-    G.losses= Math.max(parseInt(data.losses)||0,  G.losses);
-    G.gems  = Math.max(parseInt(data.gems)||0,    G.gems);
-    G.hp    = Math.max(parseInt(data.hp)||100,    G.hp);
+    // Сервер завжди має пріоритет!
+    G.mu    = parseFloat(data.mu)||0;
+    G.coins = parseFloat(data.coins)||0;
+    G.rt    = parseInt(data.rt)||0;
+    G.lv    = parseInt(data.lv)||0;
+    G.wins  = parseInt(data.wins)||0;
+    G.losses= parseInt(data.losses)||0;
+    G.gems  = parseInt(data.gems)||10;
+    G.hp    = parseInt(data.hp)||100;
 
-    G.dailyStreak = Math.max(parseInt(data.daily_streak)||0, G.dailyStreak);
-    G.lastDaily   = Math.max(parseInt(data.last_daily)||0,   G.lastDaily);
-    G.cdFI        = Math.max(parseInt(data.last_fight)||0,   G.cdFI);
-    G.trainCount  = Math.max(parseInt(data.train_count)||0,  G.trainCount||0);
-    G.refCount    = Math.max(parseInt(data.ref_count)||0,    G.refCount||0);
-    G.weekRt      = Math.max(parseInt(data.week_rt)||0,      G.weekRt||0);
+    G.dailyStreak = parseInt(data.daily_streak)||0;
+    G.lastDaily   = parseInt(data.last_daily)||0;
+    G.cdFI        = parseInt(data.last_fight)||0;
+    G.trainCount  = parseInt(data.train_count)||0;
+    G.refCount    = parseInt(data.ref_count)||0;
+    G.weekRt      = parseInt(data.week_rt)||0;
 
-    if(data.skin && data.skin !== 'default') G.skin = data.skin;
+    if(data.skin) G.skin = data.skin;
     
 
     if(!G.exp && G.lv > 0) G.exp = 0;
