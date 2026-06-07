@@ -1420,10 +1420,24 @@ if(G.weekRt===undefined) G.weekRt=0;
 if(typeof G.dailyStreak!=='number'||isNaN(G.dailyStreak))G.dailyStreak=0;
 if(typeof G.lastDaily!=='number'||isNaN(G.lastDaily))G.lastDaily=0;
 if(G.trainCount===undefined) G.trainCount=0;
-if(!G.skinLevels) G.skinLevels={'default':G.lv||0};
-if(!G.skinExp) G.skinExp={'default':G.exp||0};
-// Мігруємо старий lv в skinLevels якщо треба
-if(G.skinLevels['default']===undefined) G.skinLevels['default']=G.lv||0;
+if(!G.skinLevels) G.skinLevels={};
+if(!G.skinExp) G.skinExp={};
+
+// Мігруємо старий прогрес — якщо skinLevels порожній або default=0 але G.lv>0
+if(!G.skinLevels['default'] && G.lv>0){
+  G.skinLevels['default'] = G.lv;
+  G.skinExp['default'] = G.exp||0;
+}
+// Активний скін теж мігруємо
+if(G.skin && G.skin!=='default' && !G.skinLevels[G.skin] && G.lv>0){
+  G.skinLevels[G.skin] = G.lv;
+  G.skinExp[G.skin] = G.exp||0;
+}
+// Гарантуємо що активний скін синхронізований
+if(G.skinLevels[G.skin]===undefined) G.skinLevels[G.skin]=0;
+if(G.skinExp[G.skin]===undefined) G.skinExp[G.skin]=0;
+G.lv = G.skinLevels[G.skin]||0;
+G.exp = G.skinExp[G.skin]||0;
 if(G.totalFights===undefined) G.totalFights=G.wins+G.losses;
 
 function tryLoad(){
