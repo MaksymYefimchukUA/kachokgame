@@ -1268,7 +1268,8 @@ const CHAR_IMAGES = [
   "https://raw.githubusercontent.com/MaksymYefimchukUA/kachokgame-assets/main/chars/lv6.png",
   "https://raw.githubusercontent.com/MaksymYefimchukUA/kachokgame-assets/main/chars/lv7.png",
   "https://raw.githubusercontent.com/MaksymYefimchukUA/kachokgame-assets/main/chars/lv8.png",
-  "https://raw.githubusercontent.com/MaksymYefimchukUA/kachokgame-assets/main/chars/lv9.png"
+  "https://raw.githubusercontent.com/MaksymYefimchukUA/kachokgame-assets/main/chars/lv9.png",
+  "https://raw.githubusercontent.com/MaksymYefimchukUA/kachokgame-assets/main/chars/lv10.png"
 ];
 
 const RANKS = ['Новачок','Любитель','Спортсмен','Атлет','Бодибілдер','Профі','Еліта','Легенда','Чемпіон','Боги','UNREAL'];
@@ -1318,7 +1319,7 @@ const SKIN_LEVELS = {
 };
 
 function getSkinImage(skinId, level){
-  const lv = Math.min(level || G.lv, 9);
+  const lv = Math.min(level !== undefined ? level : G.lv, 10);
   if(skinId === 'default' || !skinId) return CHAR_IMAGES[lv];
   if(SKIN_LEVELS[skinId]) return SKIN_LEVELS[skinId][lv];
   return CHAR_IMAGES[lv]; // fallback
@@ -1683,7 +1684,7 @@ function renderHome(){
   document.getElementById('en-fill').style.width=Math.min(100,G.en)+'%';
 
   const wrap=document.getElementById('charImg');
-  const charLevel=Math.min(G.lv,9);
+  const charLevel=Math.min(G.lv,10);
   
 
   const charSrc = getSkinImage(G.skin, charLevel);
