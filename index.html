@@ -2752,8 +2752,11 @@ async function loadFromServer(userId){
     const activeSkin = G.skin || 'default';
     if(!G.skinLevels) G.skinLevels = {};
     if(!G.skinExp) G.skinExp = {};
+    // Завжди оновлюємо рівень активного скіна з сервера
     G.skinLevels[activeSkin] = G.lv;
-    G.skinExp[activeSkin] = 0;
+    G.skinExp[activeSkin] = G.exp || 0;
+    // Також оновлюємо G.lv щоб картинка відображалась правильно
+    G.lv = parseInt(data.lv) || 0;
 
     save();
     renderHome();
