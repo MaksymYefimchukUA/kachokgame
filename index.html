@@ -739,6 +739,12 @@ body{
 <audio id="bg-music" loop preload="auto">
   <source src="https://raw.githubusercontent.com/MaksymYefimchukUA/kachokgame-assets/main/sounds/Level%20Up%20Sweat.mp3" type="audio/mpeg">
 </audio>
+<audio id="sfx-train" preload="auto"><source src="https://raw.githubusercontent.com/MaksymYefimchukUA/kachokgame-assets/main/sounds/gira.mp3" type="audio/mpeg"></audio>
+<audio id="sfx-food" preload="auto"><source src="https://raw.githubusercontent.com/MaksymYefimchukUA/kachokgame-assets/main/sounds/eda.mp3" type="audio/mpeg"></audio>
+<audio id="sfx-win" preload="auto"><source src="https://raw.githubusercontent.com/MaksymYefimchukUA/kachokgame-assets/main/sounds/vin.mp3" type="audio/mpeg"></audio>
+<audio id="sfx-loss" preload="auto"><source src="https://raw.githubusercontent.com/MaksymYefimchukUA/kachokgame-assets/main/sounds/loss.mp3" type="audio/mpeg"></audio>
+<audio id="sfx-levelup" preload="auto"><source src="https://raw.githubusercontent.com/MaksymYefimchukUA/kachokgame-assets/main/sounds/lvlapp.mp3" type="audio/mpeg"></audio>
+<audio id="sfx-coin" preload="auto"><source src="https://raw.githubusercontent.com/MaksymYefimchukUA/kachokgame-assets/main/sounds/coin.mp3" type="audio/mpeg"></audio>
 </head>
 <body>
 <div class="bg"></div>
@@ -1057,7 +1063,64 @@ body{
         <div class="mc-desc">Загальний рейтинг</div>
         <div class="mc-streak" style="color:var(--gold)" id="mc-rating-pos">#—</div>
       </div>
+      <div class="menu-card" style="border-color:rgba(255,255,255,.15);background:linear-gradient(135deg,rgba(255,255,255,.05),var(--card));grid-column:1/-1" onclick="nav('settings')">
+        <div class="mc-ico">⚙️</div>
+        <div class="mc-name">Налаштування</div>
+        <div class="mc-desc">Звук, музика та інше</div>
+      </div>
     </div>
+  </div>
+  <div class="nav">
+    <div class="nav-btn" onclick="nav('home')"><span class="nav-ico">🏠</span><span class="nav-lbl">Дім</span></div>
+    <div class="nav-btn" onclick="nav('tournament')"><span class="nav-ico">🥊</span><span class="nav-lbl">Турнір</span></div>
+    <div class="nav-btn" onclick="nav('shop')"><span class="nav-ico">🛒</span><span class="nav-lbl">Магазин</span></div>
+    <div class="nav-btn act" onclick="nav('more')"><span class="nav-ico">☰</span><span class="nav-lbl">Більше</span></div>
+  </div>
+</div>
+
+<!-- SETTINGS SCREEN -->
+<div class="scr" id="s-settings">
+  <div class="scr-head">
+    <div class="back-btn" onclick="nav('more')">← Назад</div>
+    <div class="scr-title" style="color:var(--cyan)">⚙️ НАЛАШТУВАННЯ</div>
+  </div>
+  <div class="scroll" style="padding:0 14px 10px">
+
+    <!-- Музика -->
+    <div style="background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px;margin-bottom:10px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--dim);margin-bottom:12px">🎵 Звук</div>
+      
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+        <div>
+          <div style="font-size:14px;font-weight:700">Фонова музика</div>
+          <div style="font-size:10px;color:var(--dim);margin-top:2px">Музика під час гри</div>
+        </div>
+        <div id="music-toggle" onclick="toggleMusic()" style="
+          width:50px;height:26px;border-radius:13px;cursor:pointer;
+          transition:all .3s;position:relative;flex-shrink:0;">
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0">
+        <div>
+          <div style="font-size:14px;font-weight:700">Гучність музики</div>
+          <div style="font-size:10px;color:var(--dim);margin-top:2px">Від 0 до 100%</div>
+        </div>
+        <input type="range" min="0" max="100" value="30" id="volume-slider"
+          oninput="changeVolume(this.value)"
+          style="width:100px;accent-color:var(--cyan)">
+      </div>
+    </div>
+
+    <!-- Інфо -->
+    <div style="background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px;margin-bottom:10px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--dim);margin-bottom:12px">ℹ️ Про гру</div>
+      <div style="font-size:13px;color:var(--dim);line-height:1.6">
+        <div>🎮 КАЧОК 2026 v1.0</div>
+        <div style="margin-top:4px">Твій Telegram ID: <span style="color:var(--cyan);font-family:'Orbitron';font-size:11px" id="settings-id">—</span></div>
+      </div>
+    </div>
+
   </div>
   <div class="nav">
     <div class="nav-btn" onclick="nav('home')"><span class="nav-ico">🏠</span><span class="nav-lbl">Дім</span></div>
@@ -1511,7 +1574,7 @@ function addExpAndCheck(amount){
     G.skinLevels[skin]++;
     G.lv = G.skinLevels[skin];
     G.exp = G.skinExp[skin];
-    lvFlash();toast(`🎉 РІВЕНЬ ${G.lv}! ${RANKS[Math.min(G.lv,RANKS.length-1)]}`,'lv');
+    lvFlash(); playSound('levelup'); toast(`🎉 РІВЕНЬ ${G.lv}! ${RANKS[Math.min(G.lv,RANKS.length-1)]}`,'lv');
   }
   if(G.skinLevels[skin]>=10){ G.skinExp[skin]=0; G.exp=0; }
   G.lv = G.skinLevels[skin];
@@ -1543,7 +1606,7 @@ function train(type){
     G.mu+=mu; G.en=Math.max(0,G.en-20);
     G.hp=Math.max(1,G.hp-5); // Гіря -5 HP
     addExpAndCheck(exp);
-    toast(`💪 +${mu} м'яз  +${exp} EXP  ❤️-5HP`,'ok');
+    playSound('train'); toast(`💪 +${mu} м'яз  +${exp} EXP  ❤️-5HP`,'ok');
     updateQuestProgress('train');updateQuestProgress('muscle',mu);checkAchievements();
   } else if(type==='sl'){
     if(G.en>=100){toast('Енергія вже повна!','err');return;}
@@ -1564,7 +1627,7 @@ function train(type){
     G.mu+=mu; G.en=Math.max(0,G.en-10);
     G.hp=Math.max(1,G.hp-3); // Їжа -3 HP (менше навантаження)
     addExpAndCheck(exp);
-    toast(`🍗 +${mu} м'язи  +${exp} EXP  ❤️-3HP`,'ok');
+    playSound('food'); toast(`🍗 +${mu} м'язи  +${exp} EXP  ❤️-3HP`,'ok');
     G.trainCount=(G.trainCount||0)+1;updateQuestProgress('train');updateQuestProgress('muscle',mu);checkAchievements();
   } else if(type==='he'){
     if(G.en<15){toast('Мало енергії!','err');return;}
@@ -1681,7 +1744,7 @@ function doFight(){
           timer.style.display='none';
           sublabel.style.display='none';
 
-          document.getElementById('fo-title').textContent=win?'ПЕРЕМОГА!':'ПОРАЗКА';
+          if(win) playSound('win'); else playSound('loss'); document.getElementById('fo-title').textContent=win?'ПЕРЕМОГА!':'ПОРАЗКА';
           document.getElementById('fo-title').className='fo-title '+(win?'win':'lose');
           document.getElementById('fo-vs').textContent=`vs ${enemy.name} · Сила: ${enPow}`;
           document.getElementById('fo-coins').textContent=`+${coins} 🪙`;
@@ -1923,6 +1986,7 @@ function nav(screen){
   if(screen==='clans')renderClans();
   if(screen==='week')renderWeek();
   if(screen==='ref')renderRef();
+  if(screen==='settings')renderSettings();
   if(screen==='chat'){switchChatTab(chatTab);connectChat();}
 }
 
@@ -2115,7 +2179,7 @@ function claimDaily(){
   if(r.extra) G.coins+=r.extra;
   G.dailyStreak++;
   G.lastDaily=Date.now();
-  toast('🎁 День '+G.dailyStreak+': +'+r.lbl+'!','vip');
+  playSound('coin'); toast('🎁 День '+G.dailyStreak+': +'+r.lbl+'!','vip');
   save(); renderHome(); renderDaily();
   checkAchievements();
 }
@@ -2926,6 +2990,7 @@ function toggleMusic(){
   if(musicOn){ audio.play(); toast('🎵 Музика увімкнена','ok'); }
   else { audio.pause(); toast('🔇 Музика вимкнена','ok'); }
   updateMusicBtn();
+  renderSettings();
 }
 
 function updateMusicBtn(){
@@ -2934,6 +2999,47 @@ function updateMusicBtn(){
 }
 
 initMusic();
+
+function playSound(id){
+  try{
+    const audio = document.getElementById('sfx-'+id);
+    if(!audio) return;
+    audio.currentTime = 0;
+    audio.volume = 0.6;
+    audio.play().catch(()=>{});
+  }catch(e){}
+}
+
+function renderSettings(){
+  // Toggle button
+  const toggle = document.getElementById('music-toggle');
+  if(toggle){
+    toggle.style.background = musicOn ? 'var(--cyan)' : 'rgba(255,255,255,.15)';
+    toggle.innerHTML = `<div style="position:absolute;top:3px;${musicOn?'right':'left'}:3px;width:20px;height:20px;background:white;border-radius:50%;transition:all .3s"></div>`;
+  }
+  // Volume slider
+  const slider = document.getElementById('volume-slider');
+  if(slider){
+    const audio = document.getElementById('bg-music');
+    if(audio) slider.value = Math.round(audio.volume * 100);
+  }
+  // Player ID
+  const sid = document.getElementById('settings-id');
+  if(sid) sid.textContent = getTgId();
+}
+
+function changeVolume(val){
+  const audio = document.getElementById('bg-music');
+  if(audio) audio.volume = val / 100;
+  localStorage.setItem('kachok_volume', val);
+}
+
+// Load saved volume
+const savedVol = localStorage.getItem('kachok_volume');
+if(savedVol){
+  const audio = document.getElementById('bg-music');
+  if(audio) audio.volume = parseInt(savedVol) / 100;
+}
 
 initServerSync();
 </script>
